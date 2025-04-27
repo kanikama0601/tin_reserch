@@ -2,8 +2,8 @@ import numpy as np
 import math
 import random
 
-min_prime = 90000000000 #素数の最小値
-max_prime = 100000000000 #素数の最大値
+min_prime = 100 #素数の最小値
+max_prime = 200 #素数の最大値
 #-----------------------------------------------------
 # 素数判定・素数の生成
 
@@ -57,25 +57,31 @@ print(f"N = {N}")
 print(f"phi = {phi}")
 print(f"E = {E}")
 print(f"D = {D}\n")
+print(f"公開鍵 = ({E}, {N})")
+print(f"秘密鍵 = ({D}, {N})")
 
 #暗号化
 def encrypt(m, e, n):
-    return pow(m, e, n)
+    plain_unicode = [ord(char) for char in m]
+    encrypted_unicode = [pow(char, e, n) for char in plain_unicode]
+    print(encrypted_unicode)
+    encrypted_text = ''.join(chr(i) for i in encrypted_unicode)
+    return encrypted_text
 
 #復号化
 def decrypt(c, d, n):
     return pow(c, d, n)
 
-
-#-----------------------------------------------------
-# テスト
-
 #メッセージ
-m = 4545
-print(f"m(暗号化前) = {m}")
+word = "hello world"
+print(f"m(暗号化前) = {word}")
 
-c = encrypt(m, E, N) # 暗号化
-print(f"c(暗号化後) = {c}")
+text = encrypt(word, E, N) # 暗号化
 
-m2 = decrypt(c, D, N) # 復号化
-print(f"m2(復号化後) = {m2}")
+print(f"c(暗号化後) = {text}")
+
+with open("/Users/owner/Desktop/tin_reserch/kohara/encryption/rsa/generate/encrypted.txt","w") as o:
+    print(text, file=o)
+
+with open("/Users/owner/Desktop/tin_reserch/kohara/encryption/rsa/generate/秘密鍵.txt","w") as f:
+    print(f"{D}\n{N}", file=f)
