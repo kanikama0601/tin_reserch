@@ -1,0 +1,23 @@
+{
+  "name": "test_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./scripts/server.js",
+  "scripts": {
+    "test": "node ./scripts/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "_comment": "↓はimportを使うために利用しています",
+  "type": "module",
+  "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "express": "^5.1.0",
+    "ftp": "^0.3.10",
+    "iconv-lite": "^0.6.3",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
+    "url": "^0.11.4"
+  }
+}
