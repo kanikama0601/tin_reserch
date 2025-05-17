@@ -1,20 +1,46 @@
-import ftp from "ftp"; //ftp接続
-import iconv from "iconv-lite"; //utf-8変換
-import express from "express"; //メインモジュール
-import fetch from "node-fetch"; //get/post管理
-import path_url from "url"; //html表示用
-import path from "path"; //html表示用
-
-var c = new ftp();
+import ftp from "ftp";
+import iconv from "iconv-lite";
+import express from "express";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.text());
+
 
 app.post("/", (req, res) => {
-    const dir= req.body;
+    const c = new ftp();
+    const dir = req.body;
+    console.log(dir);
+
+    const sendResponse = (status, data) => {
+        if (!res.headersSent) {
+            res.status(status).send(data);
+        }
+        c.end();
+    };
+
+    c.on("ready", () => {
+        c.list(`/${dir}`, (err, list) => {
+            if (err) return sendResponse(500, { error: err.message });
+            if (!list.length) return sendResponse(200, "no file");
+
+            const fileNames = list.map(item =>
+                iconv.decode(Buffer.from(item.name, "binary"), "utf-8")
+            );
+            console.log(fileNames);
+            sendResponse(200, fileNames);
+        });
+    });
+
+    c.on("error", (err) => {
+        console.error(err);
+        sendResponse(500, { error: err.message });
+    });
 
     c.connect({
         host: "127.0.0.1",
@@ -23,45 +49,14 @@ app.post("/", (req, res) => {
         password: "password",
         encoding: "binary",
     });
-
-    c.on("ready", function () {
-        c.list("/hamadakenji", function (err, list) {
-            if (err) {
-                console.log(err);
-            } else {
-                if(list.length===0) {
-                    console.log("no file");
-                    res.send("no file");
-                }
-                for(let i = 0; i < list.length; i++){
-                    const rawname = list[i].name;
-                    const fname = iconv.decode(Buffer.from(rawname, "binary"), "utf-8");
-                    console.log(fname);
-                    res.send(fname);
-                }
-            }
-            c.end();
-        });
-    });
-
-    c.on("error", function (err) {
-        console.log(err);
-        c.end();
-    });
-    
-})
-
-
-app.get("/", (req, res) => {
-    res.send("Hello World!");
 });
+
+app.get("/", (req, res) => res.send("Hello World!"));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-// サーバーを起動
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+    console.log(`Server listening on port ${port}`);
 });
