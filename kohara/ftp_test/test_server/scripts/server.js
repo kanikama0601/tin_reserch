@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 const app = express();
-const port = 3000;
+const port = 4545;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -15,7 +15,7 @@ app.use(express.text());
 app.post("/", (req, res) => {
     const c = new ftp();
     const dir = req.body;
-    console.log(dir);
+    console.log("dir =" + dir);
 
     const sendResponse = (status, data) => {
         if (!res.headersSent) {
