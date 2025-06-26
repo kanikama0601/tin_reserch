@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 const app = express();
-const port = 4545;
+const port = 3000;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
